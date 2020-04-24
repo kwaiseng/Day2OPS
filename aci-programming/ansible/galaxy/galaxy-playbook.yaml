@@ -1,0 +1,5 @@
+- hosts: Pod25-apic
+  gather_facts: no
+  roles:
+  - role: datacenter.aci-model
+    aci_model_data: '{{ aci_topology }}'

@@ -1,0 +1,127 @@
+---
+- name: Configuring Example Tenant
+  hosts: DMZ 
+  connection: local
+  gather_facts: no
+
+  tasks:
+  - name: Create a New Tenant
+    aci_tenant:
+      host: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      private_key: "{{ private_key }}"
+      tenant: Partner-Training
+      description: "Tenant configured by Ansible"
+      validate_certs: no
+      state: present 
+
+  - name: create a new VRF
+    aci_vrf:        
+      hostname: "{{ inventory_hostname }}"        
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}"        
+      validate_certs: False        
+      state: present        
+      vrf: Demo       
+      tenant: Partner-Training       
+      descr: "Ansible created VRF"        
+      policy_control_preference: enforced        
+      policy_control_direction: ingress
+
+  - name: create bridge domain 
+    aci_bd:        
+      hostname: "{{ inventory_hostname }}"
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}"       
+      validate_certs: False        
+      state: present
+      tenant: Partner-Training
+      bd: MyBD        
+      vrf: Demo
+      enable_routing: yes        
+      arp_flooding: no        
+      l2_unknown_unicast: flood
+
+  - name: Add a new AP
+    aci_ap:
+      hostname: "{{ inventory_hostname }}"
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}" 
+      validate_certs: False  
+      tenant: Partner-Training
+      ap: MyApp
+      description: default ap
+      state: present
+
+  - name: create EPG for Web-Tier      
+    aci_epg:        
+      hostname: "{{ inventory_hostname }}"        
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}"        
+      validate_certs: False        
+      state: present
+      tenant: Partner-Training
+      epg: Web
+      ap: MyApp        
+      bd: MyBD
+
+  - name: create EPG for App-Tier      
+    aci_epg:        
+      hostname: "{{ inventory_hostname }}"        
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}"        
+      validate_certs: False        
+      state: present
+      tenant: Partner-Training
+      epg: App
+      ap: MyApp        
+      bd: MyBD
+
+  - name: contract for Web-Tier to consume AllowHTTPS service      
+    aci_epg_to_contract:        
+      hostname: "{{ inventory_hostname }}"        
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}"        
+      validate_certs: False        
+      state: present
+      tenant: Partner-Training
+      epg: Web
+      ap: MyApp                
+      contract_type: consumer        
+      contract: AllowHTTPS
+
+  - name: contract for App-Tier to provide  AllowHTTPS service      
+    aci_epg_to_contract:        
+      hostname: "{{ inventory_hostname }}"        
+      username: "{{ username }}"        
+      private_key: "{{ private_key }}"        
+      validate_certs: False        
+      state: present
+      tenant: Partner-Training
+      epg: App
+      ap: MyApp                
+      contract_type: provider       
+      contract: AllowHTTPS
+
+  - name: Define AllowHTTPS contract 
+    aci_contract:
+      hostname: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      private_key: "{{ private_key }}"
+      validate_certs: False  
+      contract: AllowHTTPS
+      description: "Allow HTTPS"
+      tenant: Partner-Training
+      scope: tenant
+
+  - name: Define filters for AllowHTTPS contract 
+    aci_contract_subject:
+      hostname: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      private_key: "{{ private_key }}"
+      validate_certs: False  
+      contract: AllowHTTPS
+      subject: default
+      description: "AllowHTTPSContract"
+      tenant: Partner-Training
+ 

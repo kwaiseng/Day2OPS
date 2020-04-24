@@ -1,0 +1,7 @@
+DMZ:
+  hosts:
+    pod25-apic.cisco.demo:
+      inventory_hostname: 172.31.25.2
+      username: admin
+      password: Day2OPS!
+      private_key: ansible.key

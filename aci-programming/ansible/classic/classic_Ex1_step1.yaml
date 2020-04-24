@@ -1,0 +1,18 @@
+---
+- name: Configuring Example Tenant
+  hosts: DMZ 
+  connection: local
+  gather_facts: no
+
+  tasks:
+  - name: Create a New Tenant
+    aci_tenant:
+      host: "{{ inventory_hostname }}"
+      username: "{{ username }}"
+      private_key: "{{ private_key }}"
+#      password: "{{ password }}"
+      tenant: "Partner-Training"
+      description: "Tenant configured by Ansible"
+      validate_certs: no
+      state: present
+    delegate_to: localhost

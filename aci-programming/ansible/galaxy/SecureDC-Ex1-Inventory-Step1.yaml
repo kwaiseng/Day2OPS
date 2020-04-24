@@ -1,0 +1,17 @@
+fabric01:
+ hosts:
+    Pod25-apic:
+      apic_host: 172.31.25.2
+      apic_username: admin
+      apic_password: Day2OPS!
+ vars:
+    apic_use_proxy: no
+    apic_validate_certs: no
+    aci_topology:
+      tenant:
+      - name: SecureDC
+        description: SecureDC tenant provisioned by Galaxy
+        app:
+        - name: Developement
+        vrf:
+        - name: SecureDC

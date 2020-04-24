@@ -1,0 +1,61 @@
+fabric01:
+ hosts:
+    Day2OPS-apic1:
+      apic_host: 192.168.21.2
+      apic_username: admin
+      apic_password: Day2OPS! 
+      apic_private_key: Pod2.key
+ vars:
+    apic_use_proxy: no
+    apic_validate_certs: no
+    aci_topology:
+      tenant:
+      - name: SecureDC
+        description: Example
+        app:
+        - name: Developement
+          epg:
+          - name: Web
+            bd: Common
+            contract:
+            - name: internet
+              type: consumer
+            - name: web_app
+              type: consumer
+          - name: App
+            bd: Common
+            contract:
+            - name: web_app
+              type: provider
+          - name: Patch
+            bd: Patch
+          - name: Repo
+            bd: Server_Inside
+        bd:
+        - name: Common
+          subnet:
+          - name: 172.16.11.1
+            mask: 24
+            scope: public
+          vrf: SecureDC
+        - name: Patch
+          subnet:
+          - name: 172.16.21.1
+            mask: 24
+            scope: public
+          vrf: SecureDC
+        - name: Server_Inside
+          vrf: SecureDC
+        vrf:
+        - name: SecureDC
+        contract:
+        - name: internet
+          scope: tenant
+          subject:
+          - name: internet
+            filter: default
+        - name: web_app
+          scope: tenant
+          subject:
+          - name: web_app
+            filter: default
